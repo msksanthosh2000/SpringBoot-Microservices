@@ -1,5 +1,6 @@
 package com.mircoservice.employee_service.controller;
 
+import com.mircoservice.employee_service.dto.ApiResponse;
 import com.mircoservice.employee_service.dto.EmployeeDto;
 import com.mircoservice.employee_service.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable long id){
-        EmployeeDto employeeDto = employeeService.getEmployeeById(id);
-
-        return ResponseEntity.ok(employeeDto);
+    public ResponseEntity<ApiResponse> getEmployeeById(@PathVariable long id){
+        ApiResponse apiResponse = employeeService.getEmployeeById(id);
+        return ResponseEntity.ok(apiResponse);
     }
 }
