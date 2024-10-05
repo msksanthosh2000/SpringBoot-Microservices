@@ -8,6 +8,8 @@ import com.mircoservice.employee_service.entity.Employee;
 import com.mircoservice.employee_service.repository.EmployeeRepository;
 import com.mircoservice.employee_service.service.ApiClient;
 import com.mircoservice.employee_service.service.EmployeeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
+    private static final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     @Autowired
     private EmployeeRepository repository;
 
@@ -27,6 +30,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 //    private WebClient webClient;
 
     private ApiClient apiClient;
+
+    @Autowired
+    public EmployeeServiceImpl(ApiClient apiClient) {
+        this.apiClient = apiClient;
+    }
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
 
@@ -55,7 +63,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 //                .block();
 
         // call Department by ApiClient
-        DepartmentDto departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
+        DepartmentDto departmentDto;
+        try{
+            departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
+        }
+        catch (Exception e){
+            log.warn(String.valueOf(e));
+            throw e;
+        }
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setEmployeeDto(Converter.convertToEmployeeDto(employee));
