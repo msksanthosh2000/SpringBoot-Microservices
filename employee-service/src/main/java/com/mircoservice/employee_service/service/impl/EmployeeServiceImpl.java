@@ -6,6 +6,7 @@ import com.mircoservice.employee_service.dto.DepartmentDto;
 import com.mircoservice.employee_service.dto.EmployeeDto;
 import com.mircoservice.employee_service.entity.Employee;
 import com.mircoservice.employee_service.repository.EmployeeRepository;
+import com.mircoservice.employee_service.service.ApiClient;
 import com.mircoservice.employee_service.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 //    @Autowired
 //    private RestTemplate restTemplate;
 
-    @Autowired
-    private WebClient webClient;
+//    @Autowired
+//    private WebClient webClient;
 
+    private ApiClient apiClient;
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
 
@@ -46,13 +48,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        DepartmentDto departmentDto = dtoResponseEntity.getBody();
 
         // Call Department by Webclient
-        DepartmentDto departmentDto = webClient.get()
-                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();
+//        DepartmentDto departmentDto = webClient.get()
+//                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+//                .retrieve()
+//                .bodyToMono(DepartmentDto.class)
+//                .block();
 
-
+        // call Department by ApiClient
+        DepartmentDto departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setEmployeeDto(Converter.convertToEmployeeDto(employee));
