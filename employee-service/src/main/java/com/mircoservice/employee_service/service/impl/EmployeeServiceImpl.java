@@ -8,6 +8,8 @@ import com.mircoservice.employee_service.entity.Employee;
 import com.mircoservice.employee_service.repository.EmployeeRepository;
 import com.mircoservice.employee_service.service.ApiClient;
 import com.mircoservice.employee_service.service.EmployeeService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +47,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+//    @CircuitBreaker(name= "${spring.application.name}" , fallbackMethod = "getDefaultDepartment")
+    @Retry(name ="${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     public ApiResponse getEmployeeById(long id) {
 
+        log.info("Inside getEmployeeById");
         Employee employee = repository.findById(id).get();
 
         // Call Department by RestTemplate
@@ -71,6 +76,23 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.warn(String.valueOf(e));
             throw e;
         }
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setEmployeeDto(Converter.convertToEmployeeDto(employee));
+        apiResponse.setDepartmentDto(departmentDto);
+        return apiResponse;
+    }
+
+    public ApiResponse getDefaultDepartment(long id, Exception e) {
+
+        log.info("Inside getDefaultDepartment");
+        Employee employee = repository.findById(id).get();
+
+        // Default Department
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setDepartmentName("R&D Department");
+        departmentDto.setDepartmentCode("RD01");
+        departmentDto.setDepartmentDescription("Research and Development Department");
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setEmployeeDto(Converter.convertToEmployeeDto(employee));
