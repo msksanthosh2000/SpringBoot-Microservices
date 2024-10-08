@@ -4,6 +4,7 @@ import com.mircoservice.employee_service.Converter;
 import com.mircoservice.employee_service.dto.ApiResponse;
 import com.mircoservice.employee_service.dto.DepartmentDto;
 import com.mircoservice.employee_service.dto.EmployeeDto;
+import com.mircoservice.employee_service.dto.OrganizationDto;
 import com.mircoservice.employee_service.entity.Employee;
 import com.mircoservice.employee_service.repository.EmployeeRepository;
 import com.mircoservice.employee_service.service.ApiClient;
@@ -28,15 +29,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 //    @Autowired
 //    private RestTemplate restTemplate;
 
-//    @Autowired
-//    private WebClient webClient;
-
-    private ApiClient apiClient;
-
     @Autowired
-    public EmployeeServiceImpl(ApiClient apiClient) {
-        this.apiClient = apiClient;
-    }
+    private WebClient webClient;
+
+//    private ApiClient apiClient;
+
+//    @Autowired
+//    public EmployeeServiceImpl(ApiClient apiClient) {
+//        this.apiClient = apiClient;
+//    }
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
 
@@ -60,26 +61,38 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 //        DepartmentDto departmentDto = dtoResponseEntity.getBody();
 
-        // Call Department by Webclient
-//        DepartmentDto departmentDto = webClient.get()
-//                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
-//                .retrieve()
-//                .bodyToMono(DepartmentDto.class)
-//                .block();
+//         Call Department by Webclient
+        DepartmentDto departmentDto = webClient.get()
+                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
+
+
 
         // call Department by ApiClient
-        DepartmentDto departmentDto;
-        try{
-            departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
-        }
-        catch (Exception e){
-            log.warn(String.valueOf(e));
-            throw e;
-        }
+//        DepartmentDto departmentDto;
+//        try{
+//            departmentDto = apiClient.getDepartmentByCode(employee.getDepartmentCode());
+//        }
+//        catch (Exception e){
+//            log.warn(String.valueOf(e));
+//            throw e;
+//        }
+
+        OrganizationDto organizationDto = webClient.get()
+                .uri("http://localhost:8083/api/organizations/" + employee.getOrganizationCode())
+                .retrieve()
+                .bodyToMono(OrganizationDto.class)
+                .block();
+
+
+
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setEmployeeDto(Converter.convertToEmployeeDto(employee));
         apiResponse.setDepartmentDto(departmentDto);
+        apiResponse.setOrganizationDto(organizationDto);
         return apiResponse;
     }
 

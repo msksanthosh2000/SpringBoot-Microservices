@@ -13,6 +13,7 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String departmentCode;
+    private String organizationCode;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -27,12 +28,13 @@ public class Employee {
         this.email = email;
     }
 
-    public Employee(long id, String firstName, String lastName, String email, String departmentCode) {
+    public Employee(long id, String firstName, String lastName, String email, String departmentCode, String organizationCode) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.departmentCode =departmentCode;
+        this.organizationCode = organizationCode;
     }
 
     public long getId() {
@@ -73,5 +75,13 @@ public class Employee {
 
     public void setDepartmentCode(String departmentCode) {
         this.departmentCode = departmentCode;
+    }
+
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
     }
 }
